@@ -16,6 +16,7 @@ module load blat/v35
 module load trinity/2.8.4
 
 Trinity --no_version_check --seqType fq --max_memory 16G --CPU 4 \
+  --trimmomatic \
   --workdir $LOCAL/trinity_local \
   --output ${outputdir} \
   --left ${read1} \
