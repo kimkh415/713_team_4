@@ -5,6 +5,7 @@ set -e
 read1=$1
 read2=$2
 outputdir=$3
+numcpu=$4
 module load gcc/5.3.0
 module load perl/5.18.4-threads
 module load java/jdk8u73
@@ -15,7 +16,7 @@ module load salmon/0.9.1
 module load blat/v35
 module load trinity/2.8.4
 
-Trinity --no_version_check --seqType fq --max_memory 16G --CPU 4 \
+Trinity --no_version_check --seqType fq --max_memory 16G --CPU ${numcpu} \
   --trimmomatic \
   --workdir ./trinity_work_dir \
   --output ${outputdir} \
