@@ -8,8 +8,6 @@ blast_filter=$3
 work_dir=$4
 num_proc=$5
 
-echo ${blast_filter}
-
 if [[ ! -d ${work_dir} ]]
 then
 	mkdir ${work_dir}
@@ -25,8 +23,6 @@ if [[ -z ${num_proc} || ${num_proc} =~ re ]]
 then
 	num_proc=4
 fi
-
-echo ${num_proc}
 
 # Check if input reads exist
 if [[ ! -f ${raw_read1} ]] || [[ ! -f ${raw_read2} ]]
@@ -57,19 +53,18 @@ mkdir -p ${work_dir}/trinity_output
 trinity_outdir=${work_dir}/trinity_output
 
 sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/trinity.sh ${unmapped_read1} ${unmapped_read2} ${trinity_outdir} ${num_proc}
-touch ${trinity_outdir}/Trinity.fasta
 
 transcript_fa=${trinity_outdir}/Trinity.fasta
 
 # transrate
-transrate_outdir=${output_dir}/transrate_output
-mkdir -p ${transrate_outdir}
-sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/transrate.sh ${transcript_fa} ${unmapped_read1} ${unmapped_read2} ${transrate_outdir}
+transrate_outdir=${work_dir}/transrate_output
+# mkdir -p ${transrate_outdir}
+sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/transrate.sh ${transcript_fa} ${unmapped_read1} ${unmapped_read2} ${transrate_outdir} ${num_proc}
 
 # show Transrate score
 
 # BLAST
-blast_output=${work_dir}/blast_output.csv
+blast_output=${work_dir}/blast_output.txt
 
 sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/blastp.sh ${transcript_fa} ${blast_output} ${blast_filter}
 echo done
