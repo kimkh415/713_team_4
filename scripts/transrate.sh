@@ -6,4 +6,4 @@ right=$3
 output=$4
 threads=$5
 module load transrate
-transrate --assembly ${assembly} --left ${left} --right ${right} --output ${output} --threads ${threads}
+transrate --assembly ${assembly} --left ${left} --right ${right} --output ${output} --threads ${threads} --loglevel error
