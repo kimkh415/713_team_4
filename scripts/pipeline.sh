@@ -4,8 +4,11 @@ set -e
 
 raw_read1=$1
 raw_read2=$2
-work_dir=$3
-num_proc=$4
+blast_filter=$3
+work_dir=$4
+num_proc=$5
+
+echo ${blast_filter}
 
 if [[ ! -d ${work_dir} ]]
 then
@@ -32,10 +35,10 @@ then
 	exit
 fi
 
+bowtie_output=${bowtie_outdir}/unmapped_%.fq
+
 # Run Bowtie2
-echo sh bowtie.sh ${raw_read1} ${raw_read2} ${bowtie_outdir}
-touch ${bowtie_outdir}/unmapped_1.fq
-touch ${bowtie_outdir}/unmapped_2.fq
+sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/bowtie.sh ${raw_read1} ${raw_read2} ${bowtie_output} ${num_proc}
 
 # convert BAM to FASTQ
 # module load bedtools
@@ -53,15 +56,22 @@ fi
 mkdir -p ${work_dir}/trinity_output
 trinity_outdir=${work_dir}/trinity_output
 
-echo sh trinity.sh ${unmapped_read1} ${unmapped_read2} ${trinity_outdir}
+sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/trinity.sh ${unmapped_read1} ${unmapped_read2} ${trinity_outdir} ${num_proc}
 touch ${trinity_outdir}/Trinity.fasta
 
 transcript_fa=${trinity_outdir}/Trinity.fasta
 
 # transrate
 transrate_outdir=${output_dir}/transrate_output
-echo sh transrate.sh ${transcript_fa} ${unmapped_read1} ${unmapped_read2} ${transrate_outdir}
-echo done
+mkdir -p ${transrate_outdir}
+sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/transrate.sh ${transcript_fa} ${unmapped_read1} ${unmapped_read2} ${transrate_outdir}
+
 # show Transrate score
 
 # BLAST
+blast_output=${work_dir}/blast_output.csv
+
+sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/blastp.sh ${transcript_fa} ${blast_output} ${blast_filter}
+echo done
+
+
