@@ -17,7 +17,8 @@ module load trinity/2.8.4
 
 Trinity --no_version_check --seqType fq --max_memory 16G --CPU 4 \
   --trimmomatic \
-  --workdir $LOCAL/trinity_local \
+  --workdir ./trinity_work_dir \
   --output ${outputdir} \
   --left ${read1} \
   --right ${read2}
+
