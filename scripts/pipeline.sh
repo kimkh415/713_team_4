@@ -5,9 +5,10 @@ set -x
 
 raw_read1=$1
 raw_read2=$2
-blast_filter=$3
-work_dir=$4
-num_proc=$5
+aln_index=$3
+blast_filter=$4
+work_dir=$5
+num_proc=$6
 
 if [[ ! -d ${work_dir} ]]
 then
@@ -39,7 +40,7 @@ unmapped_read2=${bowtie_outdir}/unmapped_2.fq
 if [[ ! -f ${unmapped_read1} ]] || [[ ! -f ${unmapped_read2} ]]
 then
 	echo Running Bowtie2...
-	sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/bowtie.sh ${raw_read1} ${raw_read2} ${bowtie_outdir} ${num_proc}
+	sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/bowtie.sh ${raw_read1} ${raw_read2} ${aln_index} ${bowtie_outdir} ${num_proc}
 else
 	echo Unmapped reads already exist in ${work_dir}/bowtie_output. Skipping Bowtie2.
 fi
@@ -84,7 +85,7 @@ fi
 blast_output=${work_dir}/blast_output.txt
 
 echo Running BLAST
-sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/blastp.sh ${transcript_fa} ${blast_output} ${blast_filter}
+sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/blastn.sh ${transcript_fa} ${blast_output} ${blast_filter}
 echo done
 
 
