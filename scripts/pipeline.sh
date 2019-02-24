@@ -82,7 +82,7 @@ fi
 # show Transrate score
 
 # BLAST
-blast_output=${work_dir}/blast_output.txt
+blast_output=${work_dir}/blast_output.csv
 
 echo Running BLAST
 sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/blastn.sh ${transcript_fa} ${blast_output} ${blast_filter}
