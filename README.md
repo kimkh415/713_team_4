@@ -57,16 +57,6 @@ Trinity is a software for _de novo_ transcript assembly that assembles reads int
 ID-PATH invokes Trinity using the following command
 
 ```
-module load gcc/5.3.0
-module load perl/5.18.4-threads
-module load java/jdk8u73
-module load bowtie2/2.2.7
-module load samtools/1.3
-module load jellyfish2/2.2.6
-module load salmon/0.9.1
-module load blat/v35
-module load trinity/2.8.4
-
 Trinity --no_version_check --seqType fq --max_memory 16G --CPU [int] \
   --trimmomatic \
   --workdir ./trinity_work_dir \
@@ -189,3 +179,29 @@ ID-PATH takes in six parameters in the following order.
 
 Take caution when you think the sample is infected with prokaryotic pathogen. Most RNA-seq is performed using oligo-dT beads that hybridize to the tails to isolate the mRNA. This is done to remove the much more abundant ribosomal RNA and tRNA from the sample. Since prokaryotes do not add polyA tails to their mRNA, your sample may not contain the information that you are looking for.
 
+ID-PATH is developed to be used in Bridges environment. Thus, it may cause errors when invoked in other machines that does not have a command `module`. To avoid this, install all the dependencies correctly and delete all lines of code invoking `module` command in the source code under `scripts` directory.
+
+
+[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
+
+
+   [dill]: <https://github.com/joemccann/dillinger>
+   [git-repo-url]: <https://github.com/joemccann/dillinger.git>
+   [john gruber]: <http://daringfireball.net>
+   [df1]: <http://daringfireball.net/projects/markdown/>
+   [markdown-it]: <https://github.com/markdown-it/markdown-it>
+   [Ace Editor]: <http://ace.ajax.org>
+   [node.js]: <http://nodejs.org>
+   [Twitter Bootstrap]: <http://twitter.github.com/bootstrap/>
+   [jQuery]: <http://jquery.com>
+   [@tjholowaychuk]: <http://twitter.com/tjholowaychuk>
+   [express]: <http://expressjs.com>
+   [AngularJS]: <http://angularjs.org>
+   [Gulp]: <http://gulpjs.com>
+
+   [PlDb]: <https://github.com/joemccann/dillinger/tree/master/plugins/dropbox/README.md>
+   [PlGh]: <https://github.com/joemccann/dillinger/tree/master/plugins/github/README.md>
+   [PlGd]: <https://github.com/joemccann/dillinger/tree/master/plugins/googledrive/README.md>
+   [PlOd]: <https://github.com/joemccann/dillinger/tree/master/plugins/onedrive/README.md>
+   [PlMe]: <https://github.com/joemccann/dillinger/tree/master/plugins/medium/README.md>
+   [PlGa]: <https://github.com/RahulHP/dillinger/blob/master/plugins/googleanalytics/README.md>
