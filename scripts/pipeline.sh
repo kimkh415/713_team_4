@@ -40,7 +40,7 @@ unmapped_read2=${bowtie_outdir}/unmapped_2.fq
 if [[ ! -f ${unmapped_read1} ]] || [[ ! -f ${unmapped_read2} ]]
 then
 	echo Running Bowtie2...
-	sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/bowtie.sh ${raw_read1} ${raw_read2} ${aln_index} ${bowtie_outdir} ${num_proc}
+	sh scripts/bowtie.sh ${raw_read1} ${raw_read2} ${aln_index} ${bowtie_outdir} ${num_proc}
 else
 	echo Unmapped reads already exist in ${work_dir}/bowtie_output. Skipping Bowtie2.
 fi
@@ -63,7 +63,7 @@ transcript_fa=${trinity_outdir}/Trinity.fasta
 if [[ ! -f ${transcript_fa} ]]
 then
 	echo Running Trinity
-	sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/trinity.sh ${unmapped_read1} ${unmapped_read2} ${trinity_outdir} ${num_proc}
+	sh scripts/trinity.sh ${unmapped_read1} ${unmapped_read2} ${trinity_outdir} ${num_proc}
 else
 	echo Assembly file already exists. Skipping Trinity.
 fi
@@ -74,7 +74,7 @@ transrate_outdir=${work_dir}/transrate_output
 if [[ ! -f ${transrate_outdir}/assemblies.csv ]]
 then
 	echo Running Transrate
-	sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/transrate.sh ${transcript_fa} ${unmapped_read1} ${unmapped_read2} ${transrate_outdir} ${num_proc}
+	sh scripts/transrate.sh ${transcript_fa} ${unmapped_read1} ${unmapped_read2} ${transrate_outdir} ${num_proc}
 else
 	echo Previous Transrate run exists. Skipping Transrate.
 fi
@@ -85,7 +85,7 @@ fi
 blast_output=${work_dir}/blast_output.csv
 
 echo Running BLAST
-sh /pylon5/mc5frap/kimkh415/713_team_4/scripts/blastn.sh ${transcript_fa} ${blast_output} ${blast_filter}
+sh scripts/blastn.sh ${transcript_fa} ${blast_output} ${blast_filter}
 echo done
 
 
