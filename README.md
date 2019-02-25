@@ -108,11 +108,11 @@ The`BLAST` output will contain these columns (in order):
 * Alignment length: number of nucleotides correctly aligned.
 * Mismatches: number of mismatches.
 * Number of gap openings 
-* Start of alignment in query: start position in query.
-* End of alignment in query: end position query.
-* Start of alignment in subject: start position in subject.
-* End of alignment in subject: end position in subject.
-* Expect value: expect value (lower is better).
+* Start of alignment in query
+* End of alignment in query
+* Start of alignment in subject
+* End of alignment in subject
+* Expect value: lower is better.
 * Score: total score of alignment.
 
 
@@ -120,7 +120,7 @@ The`BLAST` output will contain these columns (in order):
 
 ## Getting Started with ID-PATH
 
-Since building the index for human reference transcriptome can be time consuming, we provide prebuilt index for `GRCh38` reference for those who have access to PSC's Bridges. To follow this demonstration, using  requires read access to `/pylon5/mc5frap/kimkh415` directory. For those who have access to Bridges but no read access to the above directory, email kwanhok[at]andrew.cmu.edu.
+Since building the index for human reference transcriptome can be time consuming, we provide prebuilt index for `GRCh38` reference for those who have access to PSC's Bridges. To follow this demonstration, the user requires read access to `/pylon5/mc5frap/kimkh415` directory. For those who have access to Bridges but no read access to the above directory, email kwanhok[at]andrew.cmu.edu.
 
 1. Clone IP-PATH to a directory of your choice.
 2. Find paired-end RNA-seq read set (in FASTQ format) with potential eukaryotic pathogen infection.
@@ -160,7 +160,7 @@ This may take up to several hours.
 
 When ID-PATH completes, you will find a `blast_output.csv` under `ID-PATH_results` with similar transcripts found. 
 
-The first few lines of the demonstration result looks like the following.
+The first few lines of the demonstration result CSV file looks like the following.
 ![output screenshot](https://i.imgur.com/8NklOdO.png)
 
 For those of you who are looking for a quick method (run in few seconds) to check whether it runs or not (without generating meaningful output), you should use these reads keeping all other parameters the same.
@@ -188,3 +188,4 @@ ID-PATH takes in six parameters in the following order.
 ## Additional Notes
 
 Take caution when you think the sample is infected with prokaryotic pathogen. Most RNA-seq is performed using oligo-dT beads that hybridize to the tails to isolate the mRNA. This is done to remove the much more abundant ribosomal RNA and tRNA from the sample. Since prokaryotes do not add polyA tails to their mRNA, your sample may not contain the information that you are looking for.
+
