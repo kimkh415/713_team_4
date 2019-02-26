@@ -3,12 +3,11 @@
 set -e
 # set -x
 
-raw_read1=$1
-raw_read2=$2
-aln_index=$3
-blast_filter=$4
-work_dir=$5
-num_proc=$6
+raw_read=$1
+aln_index=$2
+blast_filter=$3
+work_dir=$4
+num_proc=$5
 
 if [[ ! -d ${work_dir} ]]
 then
@@ -27,20 +26,19 @@ then
 fi
 
 # Check if input reads exist
-if [[ ! -f ${raw_read1} ]] || [[ ! -f ${raw_read2} ]]
+if [[ ! -f ${raw_read} ]]
 then
-	echo Check input read files
+	echo Check input read file
 	exit
 fi
 
-unmapped_read1=${bowtie_outdir}/unmapped_1.fq
-unmapped_read2=${bowtie_outdir}/unmapped_2.fq
+unmapped_read1=${bowtie_outdir}/unmapped.fq
 
 # Run Bowtie2
-if [[ ! -f ${unmapped_read1} ]] || [[ ! -f ${unmapped_read2} ]]
+if [[ ! -f ${unmapped_read1} ]]
 then
 	echo Running Bowtie2...
-	sh scripts/bowtie.sh ${raw_read1} ${raw_read2} ${aln_index} ${bowtie_outdir} ${num_proc}
+	sh scripts/bowtie_single.sh ${raw_read} ${aln_index} ${bowtie_outdir} ${num_proc}
 else
 	echo Unmapped reads already exist in ${work_dir}/bowtie_output. Skipping Bowtie2.
 fi
@@ -49,7 +47,7 @@ fi
 # module load bedtools
 # bedtools bamtofastq -i ${unmapped_bam} -fq ${raw_read1:-3}_unmap1.fq -fq2 ${raw_read2:-3}_unmap2.fq
 
-if [[ ! -f ${unmapped_read1} ]] || [[ ! -f ${unmapped_read2} ]]
+if [[ ! -f ${unmapped_read} ]]
 then
 	echo Something went wrong: Cannot locate unmapped reads after running Botwie.
 	exit
@@ -63,23 +61,12 @@ transcript_fa=${trinity_outdir}/Trinity.fasta
 if [[ ! -f ${transcript_fa} ]]
 then
 	echo Running Trinity
-	sh scripts/trinity.sh ${unmapped_read1} ${unmapped_read2} ${trinity_outdir} ${num_proc}
+	sh scripts/trinity_single.sh ${unmapped_read} ${trinity_outdir} ${num_proc}
 else
 	echo Assembly file already exists. Skipping Trinity.
 fi
 
-# transrate
-transrate_outdir=${work_dir}/transrate_output
-# mkdir -p ${transrate_outdir}
-if [[ ! -f ${transrate_outdir}/assemblies.csv ]]
-then
-	echo Running Transrate
-	sh scripts/transrate.sh ${transcript_fa} ${unmapped_read1} ${unmapped_read2} ${transrate_outdir} ${num_proc}
-else
-	echo Previous Transrate run exists. Skipping Transrate.
-fi
-
-# show Transrate score
+echo Transrate does not accept single-end reads. Skipping Transrate.
 
 # BLAST
 blast_output=${work_dir}/blast_output.csv
