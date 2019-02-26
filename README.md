@@ -1,4 +1,4 @@
-# **User Manual for <u>Id</u>entifying <u>Pa</u>thogen <u>T</u>ranscripts in <u>H</u>uman RNA-seq Data (ID-PATH)** 
+# **User Manual for <u>Id</u>entifying <u>Pa</u>thogenic <u>T</u>ranscripts in <u>H</u>uman RNA-seq Data (ID-PATH)** 
 #### Group 4: Kwanho Kim, Aaron Seibel, Haonan Sun, Carlos Venegas, Yuheng Zhang
 
 
