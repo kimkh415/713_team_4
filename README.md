@@ -15,13 +15,20 @@ ID-PATH can be found [here](https://github.com/kimkh415/713_team_4) on GitHub.
 ```
 git clone https://github.com/kimkh415/713_team_4.git
 ```
-Cloning this repository will copy all scripts necessary to run ID-PATH. Make sure the `scripts` directory of this repository contains the following files:
-* <strong>blastn.sh</strong>
-* <strong>bowtie.sh</strong>
-* <strong>pipeline.sh</strong> - main script to be invoked
-* <strong>transrate.sh</strong>
-* <strong>trinity.sh</strong>
+Cloning this repository will copy all scripts necessary to run ID-PATH. Make sure the `scripts` directory of this repository contains the following shell scripts (.sh files):
 
+| Paired-end   	| Single-end     | Helper Script  |
+|--------------	|----------------|----------------|
+| blastn    	|                |  file_share    |
+| bowtie    	| bowtie_single  |  file_share_w  |
+| pipeline  	| pipeline_single|                |
+| transrate 	|                |                |
+| trinity   	| trinity_single |                |
+
+* <strong>pipeline</strong> and <strong>pipeline_single</strong> - main scripts to be invoked based on the input read type. If analyzing paired-end reads, run `pipeline.sh`. `pipeline_single.sh` is for single-end reads. 
+* Note that `Transrate` does not allow single-end inputs. Thus, ID-PATH omits quality checking step when processing single-end reads. 
+* Same blast script is used for both types of read analysis.
+* Helper scripts are designed to facilitate file sharing among group members. They invoke `setfacl` command to grant access to input files or directories to pre-set users (Group 4). `file_share.sh` grants read and execute access, and `file_share_w.sh` additionally grant write access.
 
 ## Dependencies
 
@@ -34,13 +41,13 @@ ID-PATH uses a number of open source tools. We provide link to the installation 
 
 ### Bowtie2
 
-Bowtie2 is the very first package in this pipeline to align raw reads acquired from SRA database to host reference genome. The human reference genome GRCh38 is used by default. 
+Bowtie2 is the first tool ID-PATH uses to align raw reads acquired from SRA database to host reference genome. The human reference genome GRCh38 is used by default. 
 
 Potential foreign reads will be store in the user-specified file after bowtie2 filter out all the mapped reads towards human genome for following steps.
 
 You can download the latest version of Bowtie2 using the specified link above.
 
-ID-PATH invokes bowtie2 using the following command
+When analyzing paired-end read set, ID-PATH invokes bowtie2 using the following command:
 
 ```
 bowtie2 -p [int] -q -x [path/to/index] -1 [path/to/read1.fq] \
@@ -48,13 +55,22 @@ bowtie2 -p [int] -q -x [path/to/index] -1 [path/to/read1.fq] \
     --quiet > [output_directory]/alignment.sam
 ```
 
-where `-p` specifies number of processors, `-x` locates the index built, `-1` and `-2` are input paired-end reads that are in FASTQ format, `--un-conc` tells `bowtie` to output unmapped reads as 
+where `-p` specifies number of processors, `-x` locates the index built, `-1` and `-2` are input paired-end reads that are in FASTQ format, `--un-conc` tells `bowtie` to output isolated unmapped read pairs as `FASTQ` files.
+
+For single-end reads analysis, ID-PATH invokes bowtie differently using the following command.
+
+```
+bowtie2 -p [int] -q -x [path/to/index] -U [path/to/read.fq] /
+    --un [output_directory]/unmapped.fq --quiet > [output_directory]/alignment.sam
+```
+
+where `-U` indicates single-end read input and `-un` outputs unaligned reads in single `FASTQ` file.
 
 ### Trinity
 
 Trinity is a software for _de novo_ transcript assembly that assembles reads into transcripts without using reference transcriptome. 
 
-ID-PATH invokes Trinity using the following command
+For paired-end reads, ID-PATH invokes Trinity using the following command
 
 ```
 Trinity --no_version_check --seqType fq --max_memory 16G --CPU [int] \
@@ -67,9 +83,21 @@ Trinity --no_version_check --seqType fq --max_memory 16G --CPU [int] \
 
 where `--no_version_check` avoids version check prior to execution, `--seqType` sets the input file format of the reads (currently fixed to `FASTQ`), `--max_memory` limits the memory usage, `--CPU` specifies the number of processors, `--trimmomatic` filters reads according to their quality, `--workdir` is the temporary working directory, `--output` specifies where to output the resulting assembly along with other measurements, and `--left` and `--right` specifies input reads.
 
+When single-end reads are passed in, ID-PATH runs `Trinity` as follows:
+
+```
+Trinity --no_version_check --seqType fq --max_memory 16G --CPU [int] \
+  --trimmomatic \
+  --workdir ./trinity_work_dir \
+  --output [outputdir] \
+  --single [read1]
+```
+
+where `--single` indicates single-end input.
+
 ### Transrate
 
-Transrate is a tool for evaluating the quality of a _de novo_ transcriptome assembly without a reference genome. The `Salmon` that comes with `Transrate` is v0.6.0 which is outdated and contains a parameter that is known for its potential to cause bugs (`--useFSPD`). Thus, we modified the script `Transrate` uses to run `Salmon` so that it uses v0.9.1 and updated bias correction parameters (`--seqBias` and `--gcBias`) to be used.
+Transrate is a tool for evaluating the quality of a _de novo_ transcriptome assembly without a reference genome. The `Salmon` that comes with `Transrate` is v0.6.0 which is outdated and contains a parameter that is known for its potential to cause bugs (`--useFSPD`). Thus, we modified the script `Transrate` uses to run `Salmon` so that it uses v0.9.1 and updated bias correction parameters (`--seqBias` and `--gcBias`) to be used. As mentioned earlier, `Transrate` only allows paired-end input.
 
 ```
 bin/transrate/transrate --assembly [path/to/assembly.fasta] \
@@ -110,7 +138,7 @@ The`BLAST` output will contain these columns (in order):
 
 ## Getting Started with ID-PATH
 
-Since building the index for human reference transcriptome can be time consuming, we provide prebuilt index for `GRCh38` reference for those who have access to PSC's Bridges. To follow this demonstration, the user requires read access to `/pylon5/mc5frap/kimkh415` directory. For those who have access to Bridges but no read access to the above directory, email kwanhok[at]andrew.cmu.edu.
+Since building the index for human reference transcriptome can be time consuming, we provide prebuilt index for `GRCh38` reference for those who have access to PSC's Bridges. To follow this demonstration, the user is required to have read access to `/pylon5/mc5frap/kimkh415` directory. For those who have access to Bridges but no read access to the above directory, email kwanhok[at]andrew.cmu.edu.
 
 1. Clone IP-PATH to a directory of your choice.
 2. Find paired-end RNA-seq read set (in FASTQ format) with potential eukaryotic pathogen infection.
@@ -124,7 +152,7 @@ sh scripts/pipeline.sh [path/to/read1.fastq] [path/to/read2.fastq] \
 
 The detailed explanation of each ID-PATH parameter can be found in the [ID-PATH Parameters](#ID-PATH-Parameters) section.
 
-## Demonstration
+## Demonstration Using Paired-end Reads
 If you are interested in demonstrating the performance ID-PATH or reproduce the results of our validation experiment, you can sequentially invoke the following commands. This demonstration uses simulated RNA-seq read set generated from a bacteria, _Clostridium cellulosi_, using [NEAT](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0167047). Since we are aligning reads from bacteria transcripts onto human reference, we should recover majority of the initial reads as `unmapped`. Then the assembly should recover the template bacterial transcripts used in simulation. Thus, the goal of this demonstration is to provide a justification of the effectiveness of ID-PATH.
 
 Parameters / Data locations
@@ -160,6 +188,13 @@ For those of you who are looking for a quick method (run in few seconds) to chec
 
 Since there are only 1000 reads in each `FASTQ` file, allocating multiple nodes is not necessary.
 
+## Command Processing Single-end Reads
+
+```
+sh scripts/pipeline_single.sh [read] [index] [GI_file] ID-PATH_results [num_cores]
+```
+
+The overall structure of the ID-PATH analytic pipeline stays the same when analyzing single-end reads. As specified above in 'Depenencies' section, the input parameter for the tools change to accomodate the read type. Since `Transrate` does not take single-end reads as input, this process of analyzing the quality of the assembly is omitted. 
 
 ## ID-PATH Parameters
 
